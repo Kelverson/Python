@@ -1,11 +1,11 @@
 import pyodbc
-import xlsxwriter
+#import xlsxwriter
 import openpyxl
 from openpyxl.worksheet.table import Table, TableStyleInfo
 
 # Parâmetros de conexão
 server = '192.168.0.8'
-database = 'TOTVS_NEWLINE_TST'
+database = 'TOTVS_NEWLINE_PRD'
 username = 'PCP'
 password = '@PCP#528'
 
@@ -18,7 +18,13 @@ conn = pyodbc.connect(conn_str)
 # Criar um cursor
 cursor = conn.cursor()
 
-b1_cod = ['AC000134KIT2','AC000137','AC000138','AC000140','AC000147','AC000152','AC000153','AC000159','AC000192']
+# Abrir o arquivo de texto em modo de leitura
+with open('C:/temp/BUSCA.txt', 'r') as file:
+    # Ler linhas do arquivo e remover espaços em branco
+    b1_cod = [line.strip() for line in file.readlines()]
+
+print(b1_cod)
+
 TamanhoArray = len(b1_cod)
 contador = 0
 p = 0
@@ -100,7 +106,7 @@ def NovaConsulta(resultado):
     # Crie uma nova planilha
     ws = wb.active
     # Conteúdo antes dos headers
-    conteudo_extra = ['Produto pesquisado: ' + sb12_b1_cod]
+    conteudo_extra = ['PRODUTO PESQUISADO: ' + sb12_b1_cod]
     # Adicione o conteúdo extra na primeira linha
     for i, valor in enumerate(conteudo_extra, start=1):
         ws.cell(row=i, column=1).value = valor
@@ -132,7 +138,7 @@ while p < TamanhoArray:
     sb12_b1_cod = b1_cod[p]
     p+=1
     # Especificar o caminho onde salvar o arquivo
-    caminho_arquivo = 'C:/KELVERSON/HTML/DevMidia/Python/resultados'+sb12_b1_cod+'.xlsx'
+    caminho_arquivo = 'C:/temp/resultados'+sb12_b1_cod+'.xlsx'
     # Executar a consulta
     query = """
         SELECT
@@ -189,7 +195,7 @@ while p < TamanhoArray:
         # Crie uma nova planilha
         ws = wb.active
         # Conteúdo antes dos headers
-        conteudo_extra = ['Produto pesquisado: ' + sb12_b1_cod]
+        conteudo_extra = ['PRODUTO PESQUISADO: ' + sb12_b1_cod]
         # Adicione o conteúdo extra na primeira linha
         for i, valor in enumerate(conteudo_extra, start=1):
             ws.cell(row=i, column=1).value = valor
