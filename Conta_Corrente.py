@@ -19,16 +19,18 @@ while True:
     #os.system('cls')
     opt=input('''
     Escolha uma opção:
-    [1] Buscar Conta
-    [2] Relatório
-    [3] Inclusão
-    [4] SAIR
-    [5] UPDATE         
+    \033[92m[1]\033[0m Buscar Conta
+    \033[92m[2]\033[0m Relatório
+    \033[92m[3]\033[0m Inclusão
+    \033[92m[4]\033[0m UPDATE         
+    \033[92m[5]\033[0m DELETE
+    \033[92m[6]\033[0m SAIR
     Opção = ''')
-    if opt not in ["1","2","3","4","5"]:
+    if opt not in ["1","2","3","4","5","6"]:
         os.system('cls')
-        print ("OPÇÃO INVÁLIDA")
-        input ('PRESSIONE ENTER PARA VOLTAR AO MENU')
+        print ("\033[91mOPÇÃO INVÁLIDA\033[0m")
+        input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')
+        os.system('cls')
     elif opt=="1":
      os.system('cls')
      nmN = 0
@@ -39,19 +41,21 @@ while True:
      for chave,dados in RP.items():
         #print(type(chave))
         if (nm in dados[0] or nmN == chave):
-          print (f'{chave:^10} {dados[0]:^10} R${dados[1]:^10.2f}')
+          saldo_formatado = "R$ {:,.2f}".format(dados[1]).replace('.', 'X').replace(',', '.').replace('X', ',')
+          print (f'\n{chave:^10} {dados[0]:^10} \033[92m{saldo_formatado}\033[0m')
         else:
           #print(cont)
           cont +=1
           if((cont > len(RP))):
-            print('Conta não encontra ou não existe')
-     input ('PRESSIONE ENTER PARA VOLTAR AO MENU')
+            print('\033[91mConta não encontra ou não existe\033[0m')
+     input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')
     elif opt=="2":
       os.system('cls')
       for chave,dados in RP.items():
          saldo_formatado = "R$ {:,.2f}".format(dados[1]).replace('.', 'X').replace(',', '.').replace('X', ',')
-         print (f'{chave:^10} {dados[0]:^10} {saldo_formatado}')
-      input ('PRESSIONE ENTER PARA VOLTAR AO MENU')
+         print (f'{chave:^10} {dados[0]:^10} \033[92m{saldo_formatado}\033[0m')
+      input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')
+      os.system('cls')
     elif opt=="3":
       os.system('cls')
       while True:
@@ -62,20 +66,25 @@ while True:
             break
           else:
             os.system('cls')
-            print('Valor invalido !!')
+            print('\033[91mValor invalido!!\033[0m')
             print('Digite novamente !!\n')
         if (matr not in RP ):
         #if (matr.isdigit() and matr not in RP ):
             while True:
-              nm=input("entre com o nome: ")
-              if nm.isdigit():
-                print('Valor invalido!!')
-                print('Digite novamente')
-              else: 
-                break 
+                  print(f'{matr:^10}')
+                  nome=input("\nentre com o nome: ")
+                  if not all(part.isalpha() for part in nome.split()):
+                    os.system('cls')
+                    print('\033[91mValor invalido!!\033[0m')
+                    print('Digite novamente\n')
+                  else: 
+                    break 
             while True:
-              sal=input("entre com o salario: ")
+              os.system('cls')
+              print (f'\n{matr:^10} {nome:^10}')
+              sal=input("\nentre com o salario: ")
               # Tente converter nm para um número inteiro
+              os.system('cls')
               try:
                   sal = int(sal)
               except ValueError:
@@ -83,25 +92,25 @@ while True:
 
               if (type(sal) != int):
                 os.system('cls')
-                print('Valor invalido!!')
+                print('\033[91mValor invalido!!\033[0m')
                 print('Digite novamente\n')
               else:
                 sal = float(sal) 
                 break
 
-            RP[matr]=[nm,sal]
-            print ('Registro Adicionado')
-            input ('PRESSIONE ENTER PARA VOLTAR AO MENU')
+            RP[matr]=[nome,sal]
+            saldo_formatado = "R$ {:,.2f}".format(sal).replace('.', 'X').replace(',', '.').replace('X', ',')
+            print ('\n\033[92mRegistro Adicionado com sucesso:\033[0m')
+            print (f'\n{matr:^10} {nome:^10} \033[92m{saldo_formatado:^10}\033[0m')
+            input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')
+            os.system('cls')
         else:
-          print('Matricula já esxite!!')
-          input ('PRESSIONE ENTER PARA VOLTAR AO MENU')
+          print('\033[93mMatricula já esxite!!\033[0m')
+          input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')
           break
         break
-    elif opt=="4":
-      input ("Pressione Enter para Finalizar")
-      break
     
-    elif opt=="5":
+    elif opt=="4":
       os.system('cls')
       nmN = 0
       cont = 1
@@ -114,7 +123,7 @@ while True:
          #print(type(chave))
          if (nm in dados[0] or nmN == chave):
            saldo_formatado = "R$ {:,.2f}".format(dados[1]).replace('.', 'X').replace(',', '.').replace('X', ',')
-           print (f'{chave:^10} {dados[0]:^10} {saldo_formatado}')
+           print (f'{chave:^10} {dados[0]:^10} \033[92m{saldo_formatado:^10}\033[0m')
            while True:
               opt2=input('''
     Oque deseja alterar ?
@@ -122,21 +131,28 @@ while True:
     [2] Saldo da Conta
     [3] SAIR        
     Opção = ''')
+              os.system('cls')
               if opt2 not in ["1","2","3"]:
                 os.system('cls')
-                print ("OPÇÃO INVÁLIDA")
-                input ('PRESSIONE ENTER PARA VOLTAR AO MENU')
+                print("\033[91mOPÇÃO INVÁLIDA\033[0m")  # Texto amarelo
+                input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')
               elif opt2 =="1":
-                os.system('cls')
-                print(dados[0])
-                nome= input('Digite novo nome do usuário: ')
-                print("Troca do nome realizada de: "+dados[0]+" para "+nome)
+                while True:
+                  print(dados[0])
+                  nome=input("entre com o novo nome: ")
+                  if not all(part.isalpha() for part in nome.split()):
+                    os.system('cls')
+                    print('\033[91mValor invalido!!\033[0m')
+                    print('Digite novamente\n')
+                  else: 
+                    break
+                print("\033[92mTroca do nome realizada de:\033[0m "+dados[0]+" \033[92mpara\033[0m "+nome)
                 dados[0] = nome
-                input ('\nPRESSIONE ENTER PARA VOLTAR AO MENU')
+                input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')
               elif opt2 =='2':
                 os.system('cls')
                 saldo_formatado = "R$ {:,.2f}".format(dados[1]).replace('.', 'X').replace(',', '.').replace('X', ',')
-                print (f'{chave:^10} {dados[0]:^10} {saldo_formatado}\n')
+                print (f'{chave:^10} {dados[0]:^10} \033[92m{saldo_formatado:^10}\033[0m\n')
 
                 while True:
                   saldo= input('Digite o novo Saldo: ')
@@ -148,7 +164,7 @@ while True:
                     
                   if (type(saldo) != int):
                     os.system('cls')
-                    print('Valor invalido!!')
+                    print('\033[91mValor invalido!!\033[0m')
                     print('Digite novamente\n')
                   else:
                     saldo = float(saldo) 
@@ -156,9 +172,9 @@ while True:
 
                 mostrar = str("R$ {:,.2f}".format(dados[1]).replace('.', 'X').replace(',', '.').replace('X', ','))
                 mostrarSaldo = str("R$ {:,.2f}".format(saldo).replace('.', 'X').replace(',', '.').replace('X', ','))
-                print("Troca do saldo realizada de: "+mostrar+" para "+mostrarSaldo)
+                print("\033[92mTroca do saldo realizada de:\033[0m "+mostrar+" para "+mostrarSaldo)
                 dados[1] = saldo
-                input ('\nPRESSIONE ENTER PARA VOLTAR AO MENU')
+                input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')
               elif opt2 =="3":
                 #input ("Pressione Enter para Finalizar")
                 break
@@ -167,5 +183,58 @@ while True:
            if((cont > len(RP))):
              print('Conta não encontra ou não existe')
 
-      input ('PRESSIONE ENTER PARA VOLTAR AO MENU')
+      input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')
       os.system('cls')
+    elif opt =='5':
+      os.system('cls')
+      print("Sessão DELETE")
+      while True:
+          nx= input('Entre com a chave a ser pesquisado: ')
+          # Tente converter nm para um número inteiro
+          try:
+              nx = int(nx)
+          except ValueError:
+              pass  # Se falhar, nmN permanece None
+            
+          if (type(nx) != int):
+            os.system('cls')
+            print('\033[91mValor invalido!!\033[0m')
+            print('Digite novamente\n')
+          else:
+            nx = (nx) 
+            break
+      chaveDel = []
+      contx = 1   
+      for chave,dados in RP.items():
+         #print(type(chave))
+         if (nx == chave):
+           saldo_formatado = "R$ {:,.2f}".format(dados[1]).replace('.', 'X').replace(',', '.').replace('X', ',')
+           print (f'{chave:^10} {dados[0]:^10} \033[92m{saldo_formatado:^10}\033[0m')
+
+           while saldo_formatado != '':
+            print('\nDeseja deletar os seguintes dados:')
+            opt = input('Digite: S ou N: ') 
+            if opt not in ["s","S","n","N"]:
+                os.system('cls')
+                print("\033[91mOPÇÃO INVÁLIDA\033[0m\n")  # Texto amarelo
+                #input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')
+            elif opt in['s','S']:
+              chaveDel.append(chave)
+              #print(chaveDel)
+              print('\n\033[91mDados deletados com sucesso!!\033[0m')
+              break
+            elif opt in['N','n']:
+               print('\nOperação cancelada!!')
+               break
+         else:
+            contx +=1
+            if((contx > len(RP))):
+              print('\n\033[91mConta não encontra ou não existe\033[0m')
+      # Deletar as chaves após a iteração
+      for chave in chaveDel:
+          del RP[chave]
+       
+      input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')         
+    elif opt=="6":
+      input ("\033[93mPressione Enter para Finalizar\033[0m")
+      break
