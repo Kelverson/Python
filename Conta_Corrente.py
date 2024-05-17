@@ -49,7 +49,8 @@ while True:
     elif opt=="2":
       os.system('cls')
       for chave,dados in RP.items():
-         print (f'{chave:^10} {dados[0]:^10} R${dados[1]:^10.2f}')
+         saldo_formatado = "R$ {:,.2f}".format(dados[1]).replace('.', 'X').replace(',', '.').replace('X', ',')
+         print (f'{chave:^10} {dados[0]:^10} {saldo_formatado}')
       input ('PRESSIONE ENTER PARA VOLTAR AO MENU')
     elif opt=="3":
       os.system('cls')
@@ -74,9 +75,16 @@ while True:
                 break 
             while True:
               sal=input("entre com o salario: ")
-              if nm.isdigit():
+              # Tente converter nm para um número inteiro
+              try:
+                  sal = int(sal)
+              except ValueError:
+                  pass  # Se falhar, nmN permanece None
+
+              if (type(sal) != int):
+                os.system('cls')
                 print('Valor invalido!!')
-                print('Digite novamente')
+                print('Digite novamente\n')
               else:
                 sal = float(sal) 
                 break
@@ -129,7 +137,23 @@ while True:
                 os.system('cls')
                 saldo_formatado = "R$ {:,.2f}".format(dados[1]).replace('.', 'X').replace(',', '.').replace('X', ',')
                 print (f'{chave:^10} {dados[0]:^10} {saldo_formatado}\n')
-                saldo= float(input('Digite o novo Saldo: '))
+
+                while True:
+                  saldo= input('Digite o novo Saldo: ')
+                  # Tente converter nm para um número inteiro
+                  try:
+                      saldo = int(saldo)
+                  except ValueError:
+                      pass  # Se falhar, nmN permanece None
+                    
+                  if (type(saldo) != int):
+                    os.system('cls')
+                    print('Valor invalido!!')
+                    print('Digite novamente\n')
+                  else:
+                    saldo = float(saldo) 
+                    break
+
                 mostrar = str("R$ {:,.2f}".format(dados[1]).replace('.', 'X').replace(',', '.').replace('X', ','))
                 mostrarSaldo = str("R$ {:,.2f}".format(saldo).replace('.', 'X').replace(',', '.').replace('X', ','))
                 print("Troca do saldo realizada de: "+mostrar+" para "+mostrarSaldo)
