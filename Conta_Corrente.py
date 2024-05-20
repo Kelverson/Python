@@ -49,6 +49,7 @@ while True:
           if((cont > len(RP))):
             print('\033[91mConta não encontra ou não existe\033[0m')
      input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')
+     os.system('cls')
     elif opt=="2":
       os.system('cls')
       for chave,dados in RP.items():
