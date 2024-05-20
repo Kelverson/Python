@@ -179,7 +179,7 @@ while True:
                 dados[1] = saldo
                 input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')
               elif opt2 =="3":
-                print("Operação cancelada !!")
+                print('\n\033[91mOperação cancelada!!\033[0m')
                 input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')
                 break
          else:
@@ -230,7 +230,7 @@ while True:
               os.system('cls')
               break
             elif opt in['N','n']:
-               print('\n\033[92mOperação cancelada!!\033[0m')
+               print('\n\033[91mOperação cancelada!!\033[0m')
                input ("\033[93mPressione Enter para Finalizar\033[0m")
                os.system('cls')
                break
