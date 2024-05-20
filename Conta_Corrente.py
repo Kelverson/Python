@@ -217,10 +217,10 @@ while True:
            while saldo_formatado != '':
             print (f'{chave:^10} {dados[0]:^10} \033[92m{saldo_formatado:^10}\033[0m')
             print('\nDeseja deletar os dados acima ?')
-            opt = input('Digite: S ou N: ') 
+            opt = input('Digite: S (PARA DELETAR) ou N (PARA CANCELAR): ') 
             if opt not in ["s","S","n","N"]:
                 os.system('cls')
-                print("\033[91mOPÇÃO INVÁLIDA\033[0m\n")  # Texto amarelo
+                print("\033[91mVALOR INVÁLIDA\033[0m\n")  # Texto amarelo
                 #input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')
             elif opt in['s','S']:
               chaveDel.append(chave)
@@ -230,7 +230,7 @@ while True:
               os.system('cls')
               break
             elif opt in['N','n']:
-               print('\nOperação cancelada!!')
+               print('\n\033[92mOperação cancelada!!\033[0m')
                input ("\033[93mPressione Enter para Finalizar\033[0m")
                os.system('cls')
                break
