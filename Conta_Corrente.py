@@ -13,7 +13,8 @@ RP={
 111:["Luiz",15000],
 112:["Fulano",14500],
 113:["Sicrano",11000],
-114:["Beltrano",13000]
+114:["Beltrano",13000],
+115:["Teste",-1532]
 }
 while True:
     #os.system('cls')
@@ -42,7 +43,10 @@ while True:
         #print(type(chave))
         if (nm in dados[0] or nmN == chave):
           saldo_formatado = "R$ {:,.2f}".format(dados[1]).replace('.', 'X').replace(',', '.').replace('X', ',')
-          print (f'\n{chave:^10} {dados[0]:^10} \033[92m{saldo_formatado}\033[0m')
+          if(dados[1] > 0):
+           print (f'\nConta:{chave:^5} Nome:{dados[0]:^10} Saldo Conta: \033[92m{saldo_formatado}\033[0m')
+          else:
+           print (f'\nConta:{chave:^5} Nome:{dados[0]:^10} Saldo Conta: \033[91m{saldo_formatado}\033[0m') 
         else:
           #print(cont)
           cont +=1
@@ -54,7 +58,10 @@ while True:
       os.system('cls')
       for chave,dados in RP.items():
          saldo_formatado = "R$ {:,.2f}".format(dados[1]).replace('.', 'X').replace(',', '.').replace('X', ',')
-         print (f'{chave:^10} {dados[0]:^10} \033[92m{saldo_formatado}\033[0m')
+         if(dados[1] > 0):
+          print (f'Conta:{chave:^5} Nome:{dados[0]:^10} Saldo Conta: \033[92m{saldo_formatado}\033[0m')
+         else:
+          print (f'Conta:{chave:^5} Nome:{dados[0]:^10} Saldo Conta: \033[91m{saldo_formatado}\033[0m') 
       input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')
       os.system('cls')
     elif opt=="3":
@@ -105,7 +112,10 @@ while True:
             RP[matr]=[nome,sal]
             saldo_formatado = "R$ {:,.2f}".format(sal).replace('.', 'X').replace(',', '.').replace('X', ',')
             print ('\n\033[92mRegistro Adicionado com sucesso:\033[0m')
-            print (f'\n{matr:^10} {nome:^10} \033[92m{saldo_formatado:^10}\033[0m')
+            if(dados[1] > 0):
+              print (f'Conta:{chave:^5} Nome:{dados[0]:^10} Saldo Conta: \033[92m{saldo_formatado}\033[0m')
+            else:
+              print (f'Conta:{chave:^5} Nome:{dados[0]:^10} Saldo Conta: \033[91m{saldo_formatado}\033[0m') 
             input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')
             os.system('cls')
         else:
@@ -126,9 +136,17 @@ while True:
       for chave,dados in RP.items():
          #print(type(chave))
          if (nm in dados[0] or nmN == chave):
-           saldo_formatado = "R$ {:,.2f}".format(dados[1]).replace('.', 'X').replace(',', '.').replace('X', ',')
-           print (f'{chave:^10} {dados[0]:^10} \033[92m{saldo_formatado:^10}\033[0m')
+           #saldo_formatado = "R$ {:,.2f}".format(dados[1]).replace('.', 'X').replace(',', '.').replace('X', ',')
+           #if(dados[1] > 0):
+           # print (f'Conta:{chave:^5} Nome:{dados[0]:^10} Saldo Conta: \033[92m{saldo_formatado}\033[0m')
+           #else:
+           # print (f'Conta:{chave:^5} Nome:{dados[0]:^10} Saldo Conta: \033[91m{saldo_formatado}\033[0m') 
            while True:
+              saldo_formatado = "R$ {:,.2f}".format(dados[1]).replace('.', 'X').replace(',', '.').replace('X', ',')
+              if(dados[1] > 0):
+               print (f'Conta:{chave:^5} Nome: {dados[0]:^10} Saldo Conta: \033[92m{saldo_formatado}\033[0m')
+              else:
+               print (f'Conta:{chave:^5} Nome: {dados[0]:^10} Saldo Conta: \033[91m{saldo_formatado}\033[0m') 
               opt2=input('''
     Oque deseja alterar ?
     [1] Usuário Conta
@@ -139,7 +157,7 @@ while True:
               if opt2 not in ["1","2","3"]:
                 os.system('cls')
                 print("\033[91mOPÇÃO INVÁLIDA\033[0m")  # Texto amarelo
-                input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')
+                #input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')
               elif opt2 =="1":
                 while True:
                   print(dados[0])
@@ -150,14 +168,18 @@ while True:
                     print('Digite novamente\n')
                   else: 
                     break
-                print("\033[92mTroca do nome realizada de:\033[0m "+dados[0]+" \033[92mpara\033[0m "+nome)
+                print("\n\033[92mTroca do nome realizada de:\033[0m "+dados[0]+" \033[92mpara\033[0m "+nome)
                 dados[0] = nome
                 input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')
+                os.system('cls')
               elif opt2 =='2':
                 os.system('cls')
                 saldo_formatado = "R$ {:,.2f}".format(dados[1]).replace('.', 'X').replace(',', '.').replace('X', ',')
-                print (f'{chave:^10} {dados[0]:^10} \033[92m{saldo_formatado:^10}\033[0m\n')
 
+                if(dados[1] > 0):
+                  print (f'Conta:{chave:^5} Nome: {dados[0]:^10} Saldo Conta: \033[92m{saldo_formatado}\033[0m')
+                else:
+                  print (f'Conta:{chave:^5} Nome: {dados[0]:^10} Saldo Conta: \033[91m{saldo_formatado}\033[0m') 
                 while True:
                   saldo= input('Digite o novo Saldo: ')
                   # Tente converter nm para um número inteiro
@@ -176,9 +198,11 @@ while True:
 
                 mostrar = str("R$ {:,.2f}".format(dados[1]).replace('.', 'X').replace(',', '.').replace('X', ','))
                 mostrarSaldo = str("R$ {:,.2f}".format(saldo).replace('.', 'X').replace(',', '.').replace('X', ','))
+                
                 print("\033[92mTroca do saldo realizada de:\033[0m "+mostrar+" para "+mostrarSaldo)
                 dados[1] = saldo
                 input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')
+                os.system('cls')
               elif opt2 =="3":
                 print('\n\033[91mOperação cancelada!!\033[0m')
                 input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')
@@ -216,7 +240,11 @@ while True:
            saldo_formatado = "R$ {:,.2f}".format(dados[1]).replace('.', 'X').replace(',', '.').replace('X', ',')
            
            while saldo_formatado != '':
-            print (f'{chave:^10} {dados[0]:^10} \033[92m{saldo_formatado:^10}\033[0m')
+            if(dados[1] > 0):
+              print (f'Conta:{chave:^5} Nome:{dados[0]:^10} Saldo Conta: \033[92m{saldo_formatado}\033[0m')
+            else:
+             print (f'Conta:{chave:^5} Nome:{dados[0]:^10} Saldo Conta: \033[91m{saldo_formatado}\033[0m') 
+            #print (f'{chave:^10} {dados[0]:^10} \033[92m{saldo_formatado:^10}\033[0m')
             print('\nDeseja deletar os dados acima ?')
             opt = input('Digite: S (PARA DELETAR) ou N (PARA CANCELAR): ') 
             if opt not in ["s","S","n","N"]:
