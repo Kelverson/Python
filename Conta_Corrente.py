@@ -1,4 +1,5 @@
 import os
+#import locale
 #International Bank KeKell 
 print("""     
 ██╗███╗   ██╗████████╗███████╗██████╗ ███╗   ██╗ █████╗ ████████╗██╗ ██████╗ ███╗   ██╗ █████╗ ██╗         ██████╗  █████╗ ███╗   ██╗██╗  ██╗    ██╗  ██╗███████╗██╗  ██╗███████╗██╗     ██╗     
@@ -18,6 +19,10 @@ RP={
 }
 while True:
     #os.system('cls')
+    #valor = 1768
+    #locale.setlocale(locale.LC_ALL,'pt_BR.UTF-8')
+    #valor = locale.currency(valor,grouping=True, symbol=True)
+    #print(valor)
     opt=input('''
     Escolha uma opção:
     \033[92m[1]\033[0m Buscar Conta
@@ -30,8 +35,8 @@ while True:
     if opt not in ["1","2","3","4","5","6"]:
         os.system('cls')
         print ("\033[91mOPÇÃO INVÁLIDA\033[0m")
-        input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')
-        os.system('cls')
+        #input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')
+        #os.system('cls')
     elif opt=="1":
      os.system('cls')
      nmN = 0
