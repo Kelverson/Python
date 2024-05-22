@@ -2,7 +2,14 @@ import pyodbc
 #import xlsxwriter
 import openpyxl
 from openpyxl.worksheet.table import Table, TableStyleInfo
+import tkinter as tk
+from tkinter import filedialog
 
+root = tk.Tk()
+root.withdraw()  # Esconde a janela principal
+
+# Abre a caixa de diálogo para selecionar um arquivo
+file_path = filedialog.askopenfilename()
 # Parâmetros de conexão
 server = '192.168.0.8'
 database = 'TOTVS_NEWLINE_PRD'
@@ -19,7 +26,7 @@ conn = pyodbc.connect(conn_str)
 cursor = conn.cursor()
 
 # Abrir o arquivo de texto em modo de leitura
-with open('C:/temp/BUSCA.txt', 'r') as file:
+with open(file_path, 'r') as file:
     # Ler linhas do arquivo e remover espaços em branco
     b1_cod = [line.strip() for line in file.readlines()]
 
@@ -34,10 +41,9 @@ def NovaConsulta(resultado):
     f = 0
     teste = 0
     tamanhoArray = len(resultado)
-    #print(resultado)
-    #print("1")
+
     resultadosFunction = []
-    #print(resultadosFunction)
+
     resultadosFunction = resultado.copy()
     continuar = True
     while continuar:
@@ -48,7 +54,9 @@ def NovaConsulta(resultado):
                     CASE
                         WHEN SB1.B1_XCATNL = 1 THEN 'EM LINHA'
                         WHEN SB1.B1_XCATNL = 2 THEN 'FORA DE LINHA'
-                        ELSE 'SEM MOVIMENTO'
+		                WHEN SB1.B1_XCATNL = 3 THEN 'SEM MOVIMENTO'
+		                WHEN SB1.B1_XCATNL = 4 THEN 'ANALISE FL'
+                        ELSE 'SUBSTIUIÇÃO'
                     END AS 'CATEG. NL',
                     RTRIM(SB1.B1_COD) AS 'CODIGO',
                     RTRIM(SB1.B1_DESC) AS 'DESC_PRODUTO',
@@ -57,6 +65,7 @@ def NovaConsulta(resultado):
                     RTRIM(SZ4.Z4_DESCFAM) AS 'DESC_FAMILIA_NL',
                     RTRIM(SB12.B1_COD) AS 'COD_COMP',
                     RTRIM(SB12.B1_DESC) AS 'DESC_COMP',
+                    RTRIM(SG1.G1_QUANT) AS 'QUANT_COMP',
                     CASE
                         WHEN SB1.B1_VIGENC <> '' THEN FORMAT(CONVERT(DATETIME2,SB1.B1_VIGENC),'dd/MM/yyyy')
                         ELSE ''
@@ -85,9 +94,9 @@ def NovaConsulta(resultado):
                 B1_COD = resultado[j][1]
                 j+=1
             elif(f < teste ):
-                #print(f)
+                
                 B1_COD = resultadosFunction[f][1]
-                #print(B1_COD)
+                
                 f+=1
             # Executar a consulta com o parâmetro
             cursor.execute(query, (B1_COD,))
@@ -97,8 +106,11 @@ def NovaConsulta(resultado):
             k = len(resultadosFunction) - 1
 
             teste = len(resultadosFunction)
+            #print(teste)
 
-            if (resultadosFunction[-1][3] in ['PA','BN']):
+            if (f == teste):
+            #if (resultadosFunction[-1][3] != ''):
+            #if (resultadosFunction[-1][3] in ['PA','BN','PP']):
                 continuar = False
 
     # Crie um objeto Workbook
@@ -111,7 +123,7 @@ def NovaConsulta(resultado):
     for i, valor in enumerate(conteudo_extra, start=1):
         ws.cell(row=i, column=1).value = valor
     # Headers
-    headers = ['CATEG. NL', 'CODIGO', 'DESC_PRODUTO', 'TIPO', 'COD_FAMILIA', 'DESC_FAMILIA_NL', 'COD_COMP', 'DESC_COMP', 'DATA_VIGENC']
+    headers = ['CATEG. NL', 'CODIGO', 'DESC_PRODUTO', 'TIPO', 'COD_FAMILIA', 'DESC_FAMILIA_NL', 'COD_COMP', 'DESC_COMP', 'QUANT_COMP', 'DATA_VIGENC']
     # Adicione os headers
     for col, header in enumerate(headers, start=1):
         ws.cell(row=len(conteudo_extra) + 1, column=col).value = header
@@ -120,14 +132,15 @@ def NovaConsulta(resultado):
         for col_idx, value in enumerate(row, start=1):
             ws.cell(row=row_idx, column=col_idx).value = value
     # Definir a formatação como tabela a partir da segunda linha
-    tab = Table(displayName="Tabela1", ref="A2:I{}".format(len(resultadosFunction) + len(conteudo_extra) + 1))
+    tab = Table(displayName="Tabela1", ref="A2:J{}".format(len(resultadosFunction) + len(conteudo_extra) + 1))
     # Estilo da tabela
     style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,
                        showLastColumn=False, showRowStripes=True, showColumnStripes=True)
     tab.tableStyleInfo = style
-    ws.add_table(tab)
+    ws.add_table(tab) 
+    # Especificar o caminho onde salvar o arquivo
     wb.save(caminho_arquivo)
-    print("Resultados exportados para Excel com sucesso!")
+    print("Resultados "+nomeArquivo+" exportados para Excel com sucesso!")
 
 while p < TamanhoArray:
     
@@ -137,15 +150,18 @@ while p < TamanhoArray:
     # Parâmetro para SB12.B1_COD
     sb12_b1_cod = b1_cod[p]
     p+=1
-    # Especificar o caminho onde salvar o arquivo
-    caminho_arquivo = 'C:/temp/resultados'+sb12_b1_cod+'.xlsx'
+    nomeArquivo = sb12_b1_cod.replace('/','_')
+    caminho_arquivo = 'C:/temp/resultados'+nomeArquivo+'.xlsx'
+
     # Executar a consulta
     query = """
         SELECT
             CASE
                 WHEN SB1.B1_XCATNL = 1 THEN 'EM LINHA'
                 WHEN SB1.B1_XCATNL = 2 THEN 'FORA DE LINHA'
-                ELSE 'SEM MOVIMENTO'
+		        WHEN SB1.B1_XCATNL = 3 THEN 'SEM MOVIMENTO'
+		        WHEN SB1.B1_XCATNL = 4 THEN 'ANALISE FL'
+                ELSE 'SUBSTIUIÇÃO'
             END AS 'CATEG. NL',
             RTRIM(SB1.B1_COD) AS 'CODIGO',
             RTRIM(SB1.B1_DESC) AS 'DESC_PRODUTO',
@@ -154,6 +170,7 @@ while p < TamanhoArray:
             RTRIM(SZ4.Z4_DESCFAM) AS 'DESC_FAMILIA_NL',
             RTRIM(SB12.B1_COD) AS 'COD_COMP',
             RTRIM(SB12.B1_DESC) AS 'DESC_COMP',
+            RTRIM(SG1.G1_QUANT) AS 'QUANT_COMP',
             CASE
                 WHEN SB1.B1_VIGENC <> '' THEN FORMAT(CONVERT(DATETIME2,SB1.B1_VIGENC),'dd/MM/yyyy')
                 ELSE ''
@@ -181,13 +198,11 @@ while p < TamanhoArray:
     
     # Executar a consulta com o parâmetro
     cursor.execute(query, (sb12_b1_cod,))
-    #print(cursor.fetchall())
-    #print(cursor.rowcount)
+    
     if(cursor.rowcount < 0 or cursor.rowcount > 0):
         for row in cursor.fetchall():
             resultados.append(row)
-
-        #print(resultados[0]) 
+            
         NovaConsulta(resultados)
     else:
         # Crie um objeto Workbook
@@ -204,8 +219,9 @@ while p < TamanhoArray:
         # Adicione os headers
         for col, header in enumerate(headers, start=1):
             ws.cell(row=len(conteudo_extra) + 1, column=col).value = header
-            
+        
+        # Especificar o caminho onde salvar o arquivo
         wb.save(caminho_arquivo)
-        print("Resultados exportados para Excel com sucesso!")
+        print("Resultados "+nomeArquivo+" exportados para Excel com sucesso!")
 
 conn.close()
