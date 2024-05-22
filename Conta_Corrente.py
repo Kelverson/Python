@@ -72,23 +72,27 @@ while True:
     elif opt=="3":
       os.system('cls')
       while True:
-        while True:
-          matr=input("entre com a matricula: ")
-          os.system('cls')
-          if(matr.isdigit()):
-            matr = int(matr)
-            break
-          else:
-            os.system('cls')
-            print('\033[91mValor invalido!!\033[0m')
-            print('Digite novamente !!\n')
+        ultima_chave = list(RP.items())[-1]
+        matr= ultima_chave[0] + 1
+        #print(matr)
+        matr = int(matr)
+        #while True:
+        #  matr=input("entre com a matricula: ")
+        #  os.system('cls')
+        #  if(matr.isdigit()):
+        #    matr = int(matr)
+        #    break
+        #  else:
+        #    os.system('cls')
+        #    print('\033[91mValor invalido!!\033[0m')
+        #    print('Digite novamente !!\n')
         if (matr not in RP ):
         #if (matr.isdigit() and matr not in RP ):
             while True:
                   print(f'{matr:^10}')
-                  nome=input("\nentre com o nome: ")
+                  nome=input("\nentre com o nome: ").strip()
                   os.system('cls')
-                  if not all(part.isalpha() for part in nome.split()):
+                  if not nome or not all(part.isalpha() for part in nome.split()):
                     os.system('cls')
                     print('\033[91mValor invalido!!\033[0m')
                     print('Digite novamente\n')
@@ -115,12 +119,13 @@ while True:
                 break
 
             RP[matr]=[nome,sal]
+            #print(RP[matr][0])
             saldo_formatado = "R$ {:,.2f}".format(sal).replace('.', 'X').replace(',', '.').replace('X', ',')
             print ('\n\033[92mRegistro Adicionado com sucesso:\033[0m')
-            if(dados[1] > 0):
-              print (f'Conta:{chave:^5} Nome:{dados[0]:^10} Saldo Conta: \033[92m{saldo_formatado}\033[0m')
+            if(sal > 0):
+              print (f'Conta:{matr:^5} Nome:{RP[matr][0]:^10} Saldo Conta: \033[92m{saldo_formatado}\033[0m')
             else:
-              print (f'Conta:{chave:^5} Nome:{dados[0]:^10} Saldo Conta: \033[91m{saldo_formatado}\033[0m') 
+              print (f'Conta:{matr:^5} Nome:{RP[matr][0]:^10} Saldo Conta: \033[91m{saldo_formatado}\033[0m') 
             input ('\n\033[93mPRESSIONE ENTER PARA VOLTAR AO MENU\033[0m')
             os.system('cls')
         else:
@@ -133,7 +138,7 @@ while True:
       os.system('cls')
       nmN = 0
       cont = 1
-      print("Sessão Update")
+      print("\033[93mSessão Update\033[0m")
       nm=input("Entre com o nome ou chave a ser pesquisado: ")
       os.system('cls')
       if nm.isdigit():
@@ -166,8 +171,8 @@ while True:
               elif opt2 =="1":
                 while True:
                   print(dados[0])
-                  nome=input("entre com o novo nome: ")
-                  if not all(part.isalpha() for part in nome.split()):
+                  nome=input("entre com o novo nome: ").strip()
+                  if not nome or not all(part.isalpha() for part in nome.split()):
                     os.system('cls')
                     print('\033[91mValor invalido!!\033[0m')
                     print('Digite novamente\n')
@@ -222,7 +227,7 @@ while True:
       os.system('cls')
       print("\033[91mSessão DELETE\033[0m")
       while True:
-          nx= input('Entre com a \033[93mchave\033[0m a ser pesquisado: \n')
+          nx= input('Entre com a \033[93mchave\033[0m a ser pesquisado: ')
           os.system('cls')
           # Tente converter nm para um número inteiro
           try:
