@@ -5,11 +5,12 @@ from openpyxl.worksheet.table import Table, TableStyleInfo
 import tkinter as tk
 from tkinter import filedialog
 
+
 root = tk.Tk()
 root.withdraw()  # Esconde a janela principal
 
 # Abre a caixa de diálogo para selecionar um arquivo
-file_path = filedialog.askopenfilename(filetypes=[("Text files", "*.txt")])
+arquivo_busca = filedialog.askopenfilename(title="Abrir arquivo com os códigos!!", filetypes=[("Text files", "*.txt")])
 
 # Parâmetros de conexão
 server = '192.168.0.8'
@@ -27,7 +28,7 @@ conn = pyodbc.connect(conn_str)
 cursor = conn.cursor()
 
 # Abrir o arquivo de texto em modo de leitura
-with open(file_path, 'r') as file:
+with open(arquivo_busca, 'r') as file:
     # Ler linhas do arquivo e remover espaços em branco
     b1_cod = [line.strip() for line in file.readlines()]
 
@@ -36,6 +37,10 @@ print(b1_cod)
 TamanhoArray = len(b1_cod)
 contador = 0
 p = 0
+
+root.withdraw()  # Esconde a janela principal
+file_path = filedialog.askdirectory(title="Onde deseja salvar!!")
+file_path2 = file_path
 
 def NovaConsulta(resultado):
     j = 0
@@ -47,9 +52,9 @@ def NovaConsulta(resultado):
     resultadosFunction = []
     # Inicializar um conjunto para armazenar códigos únicos
     codigos_unicos = set()
-
     resultadosFunction = resultado.copy()
     continuar = True
+
     while continuar:
         for i in range(len(resultado)):
             # Executar a consulta
@@ -135,19 +140,27 @@ def NovaConsulta(resultado):
     # Adicione os headers
     for col, header in enumerate(headers, start=1):
         ws.cell(row=len(conteudo_extra) + 1, column=col).value = header
+        
+    # Contador para manter o controle da linha atual na planilha
+    current_row_idx = len(conteudo_extra) + 2
+    
     # Escrever os dados
-    for row_idx, row in enumerate(resultadosFunction, start=len(conteudo_extra) + 2):
-        for col_idx, value in enumerate(row, start=1):
-            ws.cell(row=row_idx, column=col_idx).value = value
+    for row in resultadosFunction:
+        if row[3] == "PA":
+            for col_idx, value in enumerate(row, start=1):
+                ws.cell(row=current_row_idx, column=col_idx).value = value
+            # Incrementar o índice da linha apenas quando uma linha é escrita
+            current_row_idx += 1
+
     # Definir a formatação como tabela a partir da segunda linha
-    tab = Table(displayName="Tabela1", ref="A2:J{}".format(len(resultadosFunction) + len(conteudo_extra) + 1))
+    tab = Table(displayName="Tabela1", ref="A2:J{}".format(current_row_idx - 1))
     # Estilo da tabela
-    style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,
-                       showLastColumn=False, showRowStripes=True, showColumnStripes=False)
+    style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,showLastColumn=False, showRowStripes=True, showColumnStripes=False)
     tab.tableStyleInfo = style
     ws.add_table(tab) 
+    #print(file_path)
     # Especificar o caminho onde salvar o arquivo
-    wb.save(caminho_arquivo)
+    wb.save(file_path)
     print("Resultados "+nomeArquivo+" exportados para Excel com sucesso!")
 
 while p < TamanhoArray:
@@ -159,8 +172,8 @@ while p < TamanhoArray:
     sb12_b1_cod = b1_cod[p]
     p+=1
     nomeArquivo = sb12_b1_cod.replace('/','_')
-    caminho_arquivo = 'C:/temp/resultados'+nomeArquivo+'.xlsx'
-
+    #caminho_arquivo = 'C:/temp/resultados'+nomeArquivo+'.xlsx'
+    file_path = file_path2+"/"+nomeArquivo+'.xlsx'
     # Executar a consulta
     query = """
         SELECT
@@ -229,7 +242,7 @@ while p < TamanhoArray:
             ws.cell(row=len(conteudo_extra) + 1, column=col).value = header
         
         # Especificar o caminho onde salvar o arquivo
-        wb.save(caminho_arquivo)
+        wb.save(file_path)
         print("Resultados "+nomeArquivo+" exportados para Excel com sucesso!")
 
 def criar_arquivo_fim(diretorio):
@@ -251,9 +264,9 @@ def criar_arquivo_fim(diretorio):
     os.startfile(caminho_absoluto)
 
 # Especificar o diretório onde o arquivo será salvo
-diretorio = "C:/temp"  # Substitua pelo caminho desejado
-
+#diretorio = "C:/temp"  # Substitua pelo caminho desejado
+file_path = file_path2
 # Chamar a função para criar o arquivo no diretório especificado
-criar_arquivo_fim(diretorio)
+criar_arquivo_fim(file_path)
 
 conn.close()
