@@ -4,10 +4,10 @@ import openpyxl
 from openpyxl.worksheet.table import Table, TableStyleInfo
 
 # Parâmetros de conexão
-server = '192.168.0.8'
-database = 'TOTVS_NEWLINE_PRD'
-username = 'PCP'
-password = '@PCP#528'
+server = ' '
+database = ' '
+username = ' '
+password = ' '
 
 # String de conexão
 conn_str = f'DRIVER={{SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password}'
