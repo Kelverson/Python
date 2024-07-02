@@ -10,13 +10,13 @@ root = tk.Tk()
 root.withdraw()  # Esconde a janela principal
 
 # Abre a caixa de diálogo para selecionar um arquivo
-arquivo_busca = filedialog.askopenfilename(title="Abrir arquivo com os códigos!!", filetypes=[("Text files", "*.txt")])
+arquivo_busca = filedialog.askopenfilename(title="Carregar o arquivo com os códigos!!", filetypes=[("Text files", "*.txt")])
 
 # Parâmetros de conexão
 server = '192.168.0.8'
 database = 'TOTVS_NEWLINE_PRD'
 username = 'PCP'
-password = '@PCP#528'
+password = 'Gnl@2030'
 
 # String de conexão
 conn_str = f'DRIVER={{SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password}'
@@ -29,9 +29,9 @@ cursor = conn.cursor()
 
 # Abrir o arquivo de texto em modo de leitura
 with open(arquivo_busca, 'r') as file:
-    # Ler linhas do arquivo e remover espaços em branco
-    b1_cod = [line.strip() for line in file.readlines()]
-
+    # Ler linhas do arquivo, remover espaços em branco e ignorar linhas vazias
+    b1_cod = [line.strip() for line in file.readlines() if line.strip()]
+    
 print(b1_cod)
 
 TamanhoArray = len(b1_cod)
@@ -79,15 +79,16 @@ def NovaConsulta(resultado):
                         WHEN SB1.B1_VIGENC <> '' THEN FORMAT(CONVERT(DATETIME2,SB1.B1_VIGENC),'dd/MM/yyyy')
                         ELSE ''
                     END AS 'DATA_VIGENC'
-                FROM SG1010 AS SG1
-                INNER JOIN SB1010 AS SB1 ON SB1.B1_COD = SG1.G1_COD
+                FROM SG1010 AS SG1 WITH (NOLOCK)
+
+                INNER JOIN SB1010 AS SB1 WITH (NOLOCK) ON SB1.B1_COD = SG1.G1_COD
                     AND SB1.B1_FILIAL = SG1.G1_FILIAL
                     AND G1_REVFIM IN (SB1.B1_REVATU,'ZZZ','YYY')
                     AND SB1.D_E_L_E_T_ = ''
-                INNER JOIN SB1010 AS SB12 ON G1_COMP = SB12.B1_COD
+                INNER JOIN SB1010 AS SB12 WITH (NOLOCK) ON G1_COMP = SB12.B1_COD
                     AND G1_FILIAL = SB12.B1_FILIAL
                     AND SB12.D_E_L_E_T_ = ''
-                LEFT JOIN SZ4010 AS SZ4 ON SZ4.D_E_L_E_T_ = ''
+                LEFT JOIN SZ4010 AS SZ4 WITH (NOLOCK) ON SZ4.D_E_L_E_T_ = ''
                     AND Z4_FILIAL = SB1.B1_FILIAL
                     AND Z4_FAMILIA IN (' ', SB1.B1_XFAMILI)
                     AND Z4_GRUPO IN ('', SB1.B1_GRUPO)
@@ -140,20 +141,14 @@ def NovaConsulta(resultado):
     # Adicione os headers
     for col, header in enumerate(headers, start=1):
         ws.cell(row=len(conteudo_extra) + 1, column=col).value = header
-        
-    # Contador para manter o controle da linha atual na planilha
-    current_row_idx = len(conteudo_extra) + 2
-    
-    # Escrever os dados
-    for row in resultadosFunction:
-        if row[3] == "PA":
-            for col_idx, value in enumerate(row, start=1):
-                ws.cell(row=current_row_idx, column=col_idx).value = value
-            # Incrementar o índice da linha apenas quando uma linha é escrita
-            current_row_idx += 1
 
+   # Escrever os dados
+    for row_idx, row in enumerate(resultadosFunction, start=len(conteudo_extra) + 2):
+        for col_idx, value in enumerate(row, start=1):
+            ws.cell(row=row_idx, column=col_idx).value = value
     # Definir a formatação como tabela a partir da segunda linha
-    tab = Table(displayName="Tabela1", ref="A2:J{}".format(current_row_idx - 1))
+    tab = Table(displayName="Tabela1", ref="A2:J{}".format(len(resultadosFunction) + len(conteudo_extra) + 1))
+    
     # Estilo da tabela
     style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,showLastColumn=False, showRowStripes=True, showColumnStripes=False)
     tab.tableStyleInfo = style
@@ -177,44 +172,45 @@ while p < TamanhoArray:
     # Executar a consulta
     query = """
         SELECT
-            CASE
-                WHEN SB1.B1_XCATNL = 1 THEN 'EM LINHA'
-                WHEN SB1.B1_XCATNL = 2 THEN 'FORA DE LINHA'
-		        WHEN SB1.B1_XCATNL = 3 THEN 'SEM MOVIMENTO'
-		        WHEN SB1.B1_XCATNL = 4 THEN 'ANALISE FL'
-                ELSE 'SUBSTIUIÇÃO'
-            END AS 'CATEG. NL',
-            RTRIM(SB1.B1_COD) AS 'CODIGO',
-            RTRIM(SB1.B1_DESC) AS 'DESC_PRODUTO',
-            RTRIM(SB1.B1_TIPO) AS 'TIPO',
-            RTRIM(Z4_FAMILIA) AS 'COD_FAMILIA',
-            RTRIM(SZ4.Z4_DESCFAM) AS 'DESC_FAMILIA_NL',
-            RTRIM(SB12.B1_COD) AS 'COD_COMP',
-            RTRIM(SB12.B1_DESC) AS 'DESC_COMP',
-            RTRIM(SG1.G1_QUANT) AS 'QUANT_COMP',
-            CASE
-                WHEN SB1.B1_VIGENC <> '' THEN FORMAT(CONVERT(DATETIME2,SB1.B1_VIGENC),'dd/MM/yyyy')
-                ELSE ''
-            END AS 'DATA_VIGENC'
-        FROM SG1010 AS SG1
-        INNER JOIN SB1010 AS SB1 ON SB1.B1_COD = SG1.G1_COD
-            AND SB1.B1_FILIAL = SG1.G1_FILIAL
-            AND G1_REVFIM IN (SB1.B1_REVATU,'ZZZ','YYY')
-            AND SB1.D_E_L_E_T_ = ''
-        INNER JOIN SB1010 AS SB12 ON G1_COMP = SB12.B1_COD
-            AND G1_FILIAL = SB12.B1_FILIAL
-            AND SB12.D_E_L_E_T_ = ''
-        LEFT JOIN SZ4010 AS SZ4 ON SZ4.D_E_L_E_T_ = ''
-            AND Z4_FILIAL = SB1.B1_FILIAL
-            AND Z4_FAMILIA IN (' ', SB1.B1_XFAMILI)
-            AND Z4_GRUPO IN ('', SB1.B1_GRUPO)
-        WHERE SG1.D_E_L_E_T_ = ''
-            AND G1_FILIAL = '0201'
-            AND SB1.B1_XFAMILI IN (Z4_FAMILIA,'') 
-            AND SB1.B1_XPORTIF IN (Z4_PORTIFO,'')
-            AND SB1.B1_XSBPORT IN (Z4_SBPORTI,'')
-            AND SB12.B1_COD = ?
-        ORDER BY SB1.B1_VIGENC DESC
+                CASE
+                    WHEN SB1.B1_XCATNL = 1 THEN 'EM LINHA'
+                    WHEN SB1.B1_XCATNL = 2 THEN 'FORA DE LINHA'
+		            WHEN SB1.B1_XCATNL = 3 THEN 'SEM MOVIMENTO'
+		            WHEN SB1.B1_XCATNL = 4 THEN 'ANALISE FL'
+                    ELSE 'SUBSTIUIÇÃO'
+                END AS 'CATEG. NL',
+                RTRIM(SB1.B1_COD) AS 'CODIGO',
+                RTRIM(SB1.B1_DESC) AS 'DESC_PRODUTO',
+                RTRIM(SB1.B1_TIPO) AS 'TIPO',
+                RTRIM(Z4_FAMILIA) AS 'COD_FAMILIA',
+                RTRIM(SZ4.Z4_DESCFAM) AS 'DESC_FAMILIA_NL',
+                RTRIM(SB12.B1_COD) AS 'COD_COMP',
+                RTRIM(SB12.B1_DESC) AS 'DESC_COMP',
+                RTRIM(SG1.G1_QUANT) AS 'QUANT_COMP',
+                CASE
+                    WHEN SB1.B1_VIGENC <> '' THEN FORMAT(CONVERT(DATETIME2,SB1.B1_VIGENC),'dd/MM/yyyy')
+                    ELSE ''
+                END AS 'DATA_VIGENC'
+            FROM SG1010 AS SG1 WITH (NOLOCK)
+            
+            INNER JOIN SB1010 AS SB1 WITH (NOLOCK) ON SB1.B1_COD = SG1.G1_COD
+                AND SB1.B1_FILIAL = SG1.G1_FILIAL
+                AND G1_REVFIM IN (SB1.B1_REVATU,'ZZZ','YYY')
+                AND SB1.D_E_L_E_T_ = ''
+            INNER JOIN SB1010 AS SB12 WITH (NOLOCK) ON G1_COMP = SB12.B1_COD
+                AND G1_FILIAL = SB12.B1_FILIAL
+                AND SB12.D_E_L_E_T_ = ''
+            LEFT JOIN SZ4010 AS SZ4 WITH (NOLOCK) ON SZ4.D_E_L_E_T_ = ''
+                AND Z4_FILIAL = SB1.B1_FILIAL
+                AND Z4_FAMILIA IN (' ', SB1.B1_XFAMILI)
+                AND Z4_GRUPO IN ('', SB1.B1_GRUPO)
+            WHERE SG1.D_E_L_E_T_ = ''
+                AND G1_FILIAL = '0201'
+                AND SB1.B1_XFAMILI IN (Z4_FAMILIA,'') 
+                AND SB1.B1_XPORTIF IN (Z4_PORTIFO,'')
+                AND SB1.B1_XSBPORT IN (Z4_SBPORTI,'')
+                AND SB12.B1_COD = ?
+            ORDER BY SB1.B1_VIGENC DESC
     """
     
     # Executar a consulta com o parâmetro
@@ -245,7 +241,7 @@ while p < TamanhoArray:
         wb.save(file_path)
         print("Resultados "+nomeArquivo+" exportados para Excel com sucesso!")
 
-def criar_arquivo_fim(diretorio):
+def criar_arquivo_fim(diretorio,Caminho_Abrir):
     # Verificar se o diretório existe, caso contrário, criar o diretório
     if not os.path.exists(diretorio):
         os.makedirs(diretorio)
@@ -260,13 +256,13 @@ def criar_arquivo_fim(diretorio):
     
     print(f"Arquivo '{nome_arquivo}' criado com sucesso.")
     
-    caminho_absoluto = os.path.abspath(diretorio)
-    os.startfile(caminho_absoluto)
+    #caminho_absoluto = os.path.abspath(diretorio)
+    os.startfile(Caminho_Abrir)
 
 # Especificar o diretório onde o arquivo será salvo
-#diretorio = "C:/temp"  # Substitua pelo caminho desejado
+teste = "C:/temp"  # Substitua pelo caminho desejado
 file_path = file_path2
 # Chamar a função para criar o arquivo no diretório especificado
-criar_arquivo_fim(file_path)
+criar_arquivo_fim(teste,file_path)
 
 conn.close()
